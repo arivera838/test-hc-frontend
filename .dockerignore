@@ -4,4 +4,3 @@ dist
 .gitignore
 docker-compose.yml
 .dockerignore
-nginx.conf
