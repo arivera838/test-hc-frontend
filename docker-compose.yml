@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: test-hc-frontend-container
     ports:
-      - "8080:80"
+      - "8082:80"
     restart: unless-stopped
     # If running with the backend in compose, they should share a network so proxy_pass works
     networks:
@@ -14,4 +14,5 @@ services:
 networks:
   app-network:
     name: print-app-network
-    external: false
+    external: true
+
