@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export interface PrintRequestPayload {
   lpn: string;
   zone: string;
@@ -28,29 +30,34 @@ export interface PrintHistoryEntry {
   reprintReason: string | null;
 }
 
-const BASE_URL = '/api';
+const BASE_URL = import.meta.env.VITE_API_URL || '/api';
+
+const apiClient = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 export async function submitPrintRequest(
   payload: PrintRequestPayload,
 ): Promise<PrintResponse> {
-  const response = await fetch(`${BASE_URL}/print`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.message ?? 'Error al procesar la solicitud');
+  try {
+    const response = await apiClient.post<PrintResponse>('/print', payload);
+    return response.data;
+  } catch (error: any) {
+    const message = error.response?.data?.message ?? 'Error al procesar la solicitud';
+    throw new Error(message);
   }
-  return response.json();
 }
 
 export async function fetchPrintHistory(): Promise<PrintHistoryEntry[]> {
-  const response = await fetch(`${BASE_URL}/print/history`);
-  if (!response.ok) {
+  try {
+    const response = await apiClient.get<PrintHistoryEntry[]>('/print/history');
+    return response.data;
+  } catch (error: any) {
     throw new Error('Error al consultar el historial');
   }
-  return response.json();
 }
 
 export interface MetricsData {
@@ -74,11 +81,12 @@ export interface MetricsData {
 }
 
 export async function fetchMetrics(): Promise<MetricsData> {
-  const response = await fetch(`${BASE_URL}/metrics`);
-  if (!response.ok) {
+  try {
+    const response = await apiClient.get<MetricsData>('/metrics');
+    return response.data;
+  } catch (error: any) {
     throw new Error('Error al consultar métricas');
   }
-  return response.json();
 }
 
 export interface ProductInfo {
@@ -89,10 +97,12 @@ export interface ProductInfo {
 }
 
 export async function fetchProductsByLpn(lpn: string): Promise<ProductInfo[]> {
-  const response = await fetch(`${BASE_URL}/print/lpn/${lpn}/products`);
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.message ?? 'No se pudieron obtener los productos de la LPN');
+  try {
+    const response = await apiClient.get<ProductInfo[]>(`/print/lpn/${lpn}/products`);
+    return response.data;
+  } catch (error: any) {
+    const message = error.response?.data?.message ?? 'No se pudieron obtener los productos de la LPN';
+    throw new Error(message);
   }
-  return response.json();
 }
+
