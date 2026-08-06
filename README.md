@@ -127,7 +127,7 @@ El proyecto incluye un `docker-compose.yml` que empaqueta y levanta la aplicaci√
          context: .
          dockerfile: Dockerfile
          args:
-           - VITE_API_URL=http://tu-api-url.com
+           - VITE_API_URL=https://hcapi.andresrivera.dev/api
    ```
 2. **Construir y encender el contenedor:**
    ```bash
