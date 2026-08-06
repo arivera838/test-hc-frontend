@@ -13,6 +13,41 @@ El proyecto está estructurado siguiendo los principios de **Atomic Design (Dise
 - **Organisms (`src/components/organisms/`):** Componentes de negocio complejos autocontenidos (ej: `PrintForm` para el ingreso de solicitudes, `PrintHistory` para el historial y `MetricsDashboard` para las estadísticas).
 - **Service Layer (`src/services/`):** Centraliza la comunicación HTTP (`axios`) con el API del backend, aislando la lógica de red de los componentes visuales.
 
+### 🧩 Diagrama de Componentes (C4 Nivel 3)
+
+El siguiente diagrama detalla cómo se organizan y comunican los componentes internos del frontend:
+
+```mermaid
+graph TD
+    subgraph UIComponents ["Componentes de Interfaz (Atomic Design)"]
+        Atoms["Atoms<br/>(Button, Input, Select, Badge)"]
+        Molecules["Molecules<br/>(FormField, TabButton)"]
+        Organisms["Organisms<br/>(PrintForm, PrintHistory, MetricsDashboard)"]
+    end
+
+    subgraph ServiceLayer ["Capa de Servicios"]
+        AxiosClient["Axios API Client<br/>(printApi.ts)"]
+    end
+
+    subgraph ExternalLibraries ["Librerías Locales"]
+        Zod["Zod & React Hook Form<br/>(Validación de formularios)"]
+        ZPLRenderer["zpl-renderer-js<br/>(Renderizado de etiquetas ZPL en WebAssembly)"]
+    end
+
+    %% Relaciones
+    Organisms --> Atoms
+    Organisms --> Molecules
+    Molecules --> Atoms
+    
+    PrintForm["PrintForm (Organism)"] --> Zod
+    PrintForm --> AxiosClient
+    
+    PrintHistory["PrintHistory (Organism)"] --> AxiosClient
+    MetricsDashboard["MetricsDashboard (Organism)"] --> AxiosClient
+    
+    PrintForm --> ZPLRenderer
+```
+
 ---
 
 ## 🎨 Decisiones de Diseño y Experiencia de Usuario (UX)
